@@ -1,0 +1,190 @@
+---
+title: "hw2"
+author: "Colby S."
+date: "6/2/2022"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+1. You have just taken out a five-year loan from a bank to buy an engagement ring. The ring costs 7000. You plan to put down 1000 and borrow 6000. You will need to make annual payments of 1250 at the end of each year. Show the timeline of the loan from your perspective. How
+would the timeline differ if you created it from the bank’s perspective?
+```{r}
+money_labs <- c(6000, rep(-1250, 5))
+```
+
+2.You currently have a four-year-old mortgage outstanding on your house. You make monthly payments of 1600. You have just made a payment. The mortgage has 26 years to go (i.e., it had an original term of 30 years). Show the timeline from your perspective. How would the timeline
+differ if you created it from the bank’s perspective?
+```{r}
+
+```
+
+
+3. Calculate the future value of $7000 in 
+a. Four years at an interest rate of 8% per year. 
+b. Eight years at an interest rate of 8% per year. 
+c. Four years at an interest rate of 16% per year. 
+d. Why is the amount of interest earned in part (a) less than half the amount of interest earned
+in part (b)?
+```{r}
+
+```
+
+4. What is the present value of $13,000 received 
+a. Fourteen years from today when the interest rate is 10% per year? 
+b. Twenty-eight years from today when the interest rate is 20% per year?
+c. Seven years from today when the interest rate is 5% per year?
+```{r}
+
+```
+
+5. Your brother has offered to give you either $75,000 today or 150,000 in 9 years. If the interest rate is 8% per year, which option is preferable?
+```{r}
+
+```
+
+6. Consider the following alternatives: 
+
+i.    150 received in one year 
+ii.   220 received in five years
+iii.  330 received in ten years
+
+a. Rank the alternatives from most valuable to least valuable if the interest rate is 11% per year. 
+b. What is your ranking if the interest rate is only 4% per year?
+c. What is your ranking if the interest rate is 15% per year?
+```{r}
+p <- c(150, 220, 330)
+n <- c(1, 5, 10)
+
+data.frame(p, n) |>
+  mutate(pv_a = p/(1+.11)^n,
+         pv_b = p/(1+.04)^n,
+         pv_c = p/(1+.15)^n)
+```
+
+7. Suppose you invest 1000 in an account paying 6% interest per year. 
+a. What is the balance in the account after 3 years? How much of this balance corresponds to “interest on interest”?
+b. What is the balance in the account after 35 years? How much of this balance corresponds to
+interest on interest?
+```{r}
+p <- 1000
+r <- 0.06
+n <- c(3, 35)
+
+data.frame(p, r, n) |>
+  mutate(fv = p*(1+r)^n,
+         i_on_i = fv - (p*(1+r*n)))
+```
+
+8. Your daughter is currently 11 years old. You anticipate that she will be going to college in seven years. You would like to have 108,000 in a savings account to fund her education at that time. If the account promises to pay a fixed interest rate of 6% per year, how much money do you need to put into the account today to ensure that you will have $108,000 in seven years?
+```{r}
+108000/(1+0.06)^7
+```
+
+9. You are thinking of retiring. Your retirement plan will pay you either 250,000 immediately on retirement or $350,000 five years after the date of your retirement. Which alternative should you choose if the interest rate is 
+a. 0% per year? 
+b. 8% per year?
+c. 20% per year?
+```{r}
+p <- c(250000, 350000)
+n <- c(0, 5)
+r <- c(0, 0.08, 0.20)
+
+df <- data.frame(p, n) |>
+  mutate(a = p/(1+r[1])^n,
+         b = p/(1+r[2])^n,
+         c = p/(1+r[3])^n)
+# a
+df[which.max(df$a), 1]
+# b
+df[which.max(df$b), 1]
+# c
+df[which.max(df$c), 1]
+
+rm(list = ls())
+```
+
+10. Your grandfather put some money in an account for you on the day you were born. You are now 18 years old and are allowed to withdraw the money for the first time. The account currently has $3247 in it and pays a 6% interest rate. 
+a. How much money would be in the account if you left the money there until your 25th birthday? 
+b. What if you left the money until your 65th birthday?
+c. How much money did your grandfather originally put in the account?
+```{r}
+p <- 3247
+r <- 0.06
+
+# a
+p*(1+r)^(25-18)
+# b
+p*(1+r)^(65-18)
+# c
+p/(1+r)^18
+
+rm(list = ls())
+```
+
+Suppose you receive $100 at the end of each year for the next three years. 
+a. If the interest rate is 7%, what is the present value of these cash flows? 
+b. What is the future value in three years of the present value you computed in (a)? 
+c. Suppose you deposit the cash flows in a bank account that pays 7% interest per year. What is the balance in the account at the end of each of the next three years (after your deposit is
+made)? How does the final bank balance compare with your answer in (b)?
+```{r}
+r <- 0.07
+pv_endowment <- numeric()
+for(n  in 1:3){
+  new_endowment <- 100/1.07^n
+  pv_endowment <- c(pv_endowment, new_endowment)
+}
+# a
+print(pv_endowment)
+sum(pv_endowment)
+# b
+sum(pv_endowment)*(1.07)^3
+# c
+100*(1+r)^2+100*(1+r)+100
+# the balances are the same
+
+rm(list = ls())
+```
+
+18. The British government has a consol bond outstanding paying £300 per year forever. Assume the current interest rate is 4% per year. 
+a. What is the value of the bond immediately after a payment is made?
+b. What is the value of the bond immediately before a payment is made?
+```{r}
+c <- 300
+r <- 0.04
+# a and b
+c/r
+# the value of a perpetuity does not change from a paymnet being made
+rm(list = ls())
+```
+
+19. What is the present value of $9000 paid at the end of each of the next 88 years if the interest rate is 10% per year?
+```{r}
+c <- 9000
+n <- 88
+r <- 0.10
+
+c/r * (1-1/(1+r)^n)
+
+rm(list = ls())
+```
+
+22. You are 23 years old and decide to start saving for your retirement. You plan to save $5000 at the end of each year (so the first deposit will be one year from now), and will make the last deposit when you retire at age 68. Suppose you earn 9% per year on your retirement savings. 
+a. How much will you have saved for retirement? 
+b. How much will you have saved if you wait until age 32 to start saving (again, with your first
+deposit at the end of the year)?
+```{r}
+c <- 5000
+n <- 68-24
+r <- 0.09
+# a
+print(paste0("retirement:", "$", c/r * (1-1/(1+r)^n)*1.07^n))
+# b
+n <- 68-33
+print(paste0("retirement:", "$", c/r * (1-1/(1+r)^n)*1.07^n))
+```
+
