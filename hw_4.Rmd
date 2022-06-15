@@ -1,0 +1,219 @@
+---
+title: "hw_4"
+author: "Colby S."
+date: '2022-06-08'
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+HW 4
+ECP – 3004 (Summer 2022)
+Due: 06/16/2022
+Berk & DeMarzo: Chapter 6
+
+Problems 1-4, 10, 13, 17-19, 28
+
+
+### 8-1. done
+A 30-year bond with a face value of 1000 has a coupon rate of 5.5%, with semiannual payments.
+a. What is the coupon payment for this bond?
+$$ CPN = \frac{\text{Coupon Rate}*\text{Face Value}}{\text{Number of Coupons per Year}}$$
+b. Draw the cash flows for the bond on a timeline.
+
+
+### 8-2. done 
+Assume that a bond will make 20 dollar payments every six months for 20 periods, and when it expires it will pay out an additional 1000 dollars
+```{r}
+CPN <- 20 #dollars
+face_value <- 1000 #dollars
+coupons_per_year <- 2 #semiannual
+maturity_periods <- 20 #maturity in periods
+```
+
+a. What is the maturity of the bond (in years)?
+
+>the maturity, or term, of the bond is the remaining time until the bond reaches maturity. In this case we convert 20 six month periods into years.
+
+```{r}
+6*20/12 #years
+```
+
+b. What is the coupon rate (in percent)?
+$$CPN = \frac{\text{Coupon Rate} * \text{Face Value}}{\text{Number of Coupons per Year}}$$
+```{r}
+coupon_rate <- CPN *coupons_per_year / face_value
+coupon_rate
+```
+
+c. What is the face value?
+```{r}
+face_value #given in problem
+```
+
+
+### 8-3. done
+The following table summarizes prices of various default-free, zero-coupon bonds (expressed as
+a percentage of face value):
+```{r}
+maturity <- 1:5
+price <- c(95.51, 91.05, 86.38, 81.65, 76.51) #per 100 dollar face value
+rbind(maturity, price)
+```
+
+
+a. Compute the yield to maturity for each bond.
+>because the bonds are zero-coupon bonds, the present value of the bond is the discounted future value of the bond. 
+
+$$PV = \frac{FV}{\text{yeild to maturity (YTM)}^n}$$
+```{r}
+YTM <- round((100/price)^(1/maturity) - 1, digits = 3)
+YTM
+```
+
+b. Plot the zero-coupon yield curve (for the first five years).
+```{r}
+data.frame(maturity, YTM) |>
+ggplot(aes(x = maturity, y = YTM)) +
+  geom_line()
+```
+
+c. Is the yield curve upward sloping, downward sloping, or flat?
+
+>upword sloping
+
+
+### 8-4. done
+Suppose the current zero-coupon yield curve for risk-free bonds is as follows:
+```{r}
+maturity <- 1:5
+YTM <- c(5, 5.5, 5.75, 5.95, 6.05) * 0.01 
+rbind(maturity, YTM)
+```
+$$CPN = \frac{\text{Coupon Rate * Face Value}}{\text{Coupons per Year}}$$
+$$PV = FV/(1+r)^n$$
+a. What is the price per 100 face value of a two-year, zero-coupon, risk-free bond?
+b. What is the price per 100 face value of a four-year, zero-coupon, risk-free bond?
+c. What is the risk-free interest rate for a five-year maturity?
+
+```{r}
+n <- c(2, 4, 5)
+solutions <- 100/(1+YTM[n])^n 
+names(solutions) <- c("a", "b", "c")
+solutions
+```
+
+### 8-10. done
+Suppose a seven-year, 1000 bond with an 8% coupon rate and semiannual coupons is trading
+with a yield to maturity of 6.75%.
+```{r}
+term <- 7 #years
+face_value <- 1000 #dollars
+coupon_rate <- 0.08
+periods_per_year <- 2 #semiannual
+YTM <- 0.0675
+```
+
+
+a. Is this bond currently trading at a discount, at par, or at a premium? Explain.
+> a bond traving above par will have a price > face value. This occurs when the coupon rate > YTM
+> a bond trading at par will have a price = face value. This occurs when the coupon rate = YTM
+> a bond trading below par will have a price < face value. This occurs when teh coupon rate is < YTM
+
+>this bond is trading at a premium because the coupon rate > YTM
+
+b. If the yield to maturity of the bond rises to 7% (APR with semiannual compounding), what
+price will the bond trade for?
+$$\text{(6.5) Yeild to Maturity of a Coupon Bond}$$
+$$price = \frac{CPN}{y}(1-\frac{1}{(1+y)^n}) + \frac{\text{Face Value}}{(1+y)^n}$$
+```{r}
+YTM <- 0.07 #APR
+y <- YTM/periods_per_year
+n <- term * periods_per_year # compounding periods left on bond
+CPN <- coupon_rate*face_value / periods_per_year
+
+CPN/y*(1-1/(1+y)^n) + face_value/(1+y)^n
+```
+
+
+### 8-13. done
+Consider the following  \$100 annual bonds:
+```{r, echo = FALSE}
+face_value <- 100
+bond <- LETTERS[1:4]
+coupon_rate <- c(0, 0, 4, 8) * 0.01
+maturity <- c(15, 10, 15, 10) #years
+bond_df <- data.frame(bond, coupon_rate, maturity, face_value) |>
+  mutate(CPN = face_value*coupon_rate)
+bond_df
+```
+
+a. What is the percentage change in the price of each bond if its yield to maturity falls from
+6% to 5%?
+$$\text{(6.5) Yeild to Maturity of a Coupon Bond}$$
+$$price = \frac{CPN}{y}(1-\frac{1}{(1+y)^n}) + \frac{\text{Face Value}}{(1+y)^n}$$
+
+$$\text{percentage change} = \frac{\Delta price}{price_\text{original}}*100$$
+```{r}
+term <- maturity #the bonds are new, so the term is the full term of the bond (maturity)
+
+pct_change_df <- bond_df |>
+  mutate(price_5 = CPN/0.05*(1-1/(1+0.05)^term) + face_value/(1+0.05)^term, #price with YTM = 5%
+         price_6 = CPN/0.06*(1-1/(1+0.06)^term) + face_value/(1+0.06)^term, #price with YTM = 6%
+         percent_change = round((price_5 - price_6)/price_6*100, 2)) |>
+  select(bond, percent_change)
+
+# there is a more concise way to program this
+YTM <- c(0.06, 0.05)
+bond_df |>
+  mutate(percent_change = diff(CPN/YTM*(1-1/(1+YTM)^term) + face_value/(1+YTM)^term), #price with YTM = 5%
+         price_6 = CPN/0.06*(1-1/(1+0.06)^term) + face_value/(1+0.06)^term) #price with YTM = 6%
+
+```
+
+b. Which of the bonds A–D is most sensitive to a 1% drop in interest rates from 6% to 5% and
+why? Which bond is least sensitive? Provide an intuitive explanation for your answer.
+```{r}
+pct_change_df[which.max(pct_change_df$percent_change), ]
+
+pct_change_df[which.min(pct_change_df$percent_change), ]
+```
+
+### 8-17. 
+What is the price today of a two-year, default-free security with a face value of \$1000 and an
+annual coupon rate of 6%? Does this bond trade at a discount, at par, or at a premium?
+```{r}
+term <- 2 #years
+face_val <- 1000 #dollars
+coupon_rate <- 0.06 #6%
+```
+>A bond trades at a premium when the price > face value. This occurs when the coupon rate > YTM.
+
+```{r}
+
+```
+
+
+### 8-18. 
+What is the price of a five-year, zero-coupon, default-free security with a face value of 1000?
+```{r}
+
+```
+
+### 8-19. 
+What is the price of a three-year, default-free security with a face value of 1000 and an annual
+coupon rate of 4%? What is the yield to maturity for this bond?
+The following table summarizes the yields to maturity on several one-year, zero-coupon securities:
+a. What is the price (expressed as a percentage of the face value) of a one-year, zero-coupon
+corporate bond with a AAA rating?
+b. What is the credit spread on AAA-rated corporate bonds?
+c. What is the credit spread on B-rated corporate bonds?
+d. How does the credit spread change with the bond rating? Why?
+
+### 8-28. 
+Grummon Corporation has issued zero-coupon corporate bonds with a five-year maturity. Investors believe there is a 25% chance that Grummon will default on these bonds. If Grummon does default, investors expect to receive only 65 cents per dollar they are owed. If investors require a 6% expected return on their investment in these bonds, what will be the
+price and yield to maturity on these bonds?

@@ -3,12 +3,16 @@ title: "hw_3"
 author: "Colby S."
 date: "6/6/2022"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 library(tidyverse)
 ```
-1. Upon retirement, a university professor finds that he has 1 million in his retirement account at TIAA-CREF. He wants to continue receiving a monthly salary for the next 20 years, so he decides to purchase an annuity product from TIAA-CREFF. He has the following options:
+
+### 1.
+Upon retirement, a university professor finds that he has 1 million in his retirement account at TIAA-CREF. He wants to continue receiving a monthly salary for the next 20 years, so he decides to purchase an annuity product from TIAA-CREFF. He has the following options:
 
 a). Receive fixed monthly payments for the next 20 years starting next month. 
 
@@ -17,40 +21,73 @@ b). Receive monthly payments for the next 20 years starting next month that grow
 What are his monthly payment under the two options if the annual rate on the annuity is 6%
 (0.06/12 = 0.005 per month)?
 
-$$
-eq.4.9
-$$
+<span style="color: red;">monthly annuity rate is incorrect, growth rate is inconsistent in the same way see eq 5.1</span>
+$$eq.5.1$$
+$$\text{equivalent n-period discount rate} = (1+r)^n -1$$
+```{r}
+r_year <- 0.06
+
+r_month <- (1+r_year)^(1/12) - 1
+
+#does growth rate check out?
+0.03 == (1+0.0025)^12
+
+```
+
+$$eq.4.9$$
 $$
 \text{The Present Value of an Annuity} = \frac{c}{r}(1-\frac{1}{1+r)^N})
 $$
-$$
-eq.4.12
-$$
+$$eq.4.12$$
 $$
 \text{The Present Value of a Growing Annuity} = \frac{c}{r-g}(1-(\frac{1+g}{1+r})^N)
 $$
 
 ```{r}
-p <- 1000000
+p <- 1000000 #the current price of the annuity
 yrs <- 20
 n <- yrs*12 #number of periods
-r<- 0.05
+r <- 0.005 #incorrect monthly rate
 
-# a
-payment <- p*r/(1-1/(1+r)^n)
-payment
+r_month <- (1+r_year)^(1/12) - 1 #correct monthly rate
 
+# a (annuity)
+payment_incorrect <- p*r/(1-1/(1+r)^n)
 
-# b
-g <- 0.0025 #monthly rate
-r <- 0.05 #monthly rate
+payment_correct <- p*r_month/(1-1/(1+r_month)^n)
 
-payment <- p*(r-g)/(1-((1+g)/(1+r))^n)
-payment
+diff <- payment_correct - payment_incorrect 
+diff
 
+# present value of money lost over the lifetime of the annuity
+k <- 1:n
+sum(diff/(1+0.0025)^k)
 ```
 
-9-1. Assume Evco, Inc., has a current price of 50 and will pay a 2 dollar dividend in one year, and its equity cost of capital is 15%. What price must you expect it to sell for right after paying the dividend in one year in order to justify its current price?
+```{r, echo = FALSE}
+cat("with fixed montly payments and the incorrect interest rate, the professor would receive $", round(payment_incorrect, digits = 2), " each month.", sep = "")
+
+cat("with fixed montly payments and the correct interest rate, the professor would receive $", round(payment_correct, digits = 2), " each month. ", sep = "")
+```
+
+
+```{r}
+# b (growing annuity)
+g <- 0.0025 #monthly rate
+
+payment_incorrect <- p*(r-g)/(1-((1+g)/(1+r))^n)
+
+payment_more_correct <- p*(r_month-g)/(1-((1+g)/(1+r_month))^n)
+```
+
+```{r, echo = FALSE}
+cat("with payments that are adjusted for inflation and the wrong monthy rate for the annuity, the professor would receive $", round(payment_incorrect, digits = 2), " in the first month.", sep = "")
+
+cat("with payments that are adjusted for inflation and the correct monthy rate for the annuity, the professor would receive $", round(payment_more_correct, digits = 2), " in the first month.", sep = "")
+```
+
+### 9-1. 
+Assume Evco, Inc., has a current price of 50 and will pay a 2 dollar dividend in one year, and its equity cost of capital is 15%. What price must you expect it to sell for right after paying the dividend in one year in order to justify its current price?
 ```{r}
 p <- 50
 div <- 2
@@ -67,10 +104,16 @@ P_0 = (Div_1 + P_1)/(1+r_E)
 $$
 
 ```{r}
-cat("I would expect the security to sell for at least $", p*(1+r_E)-div, "in one year")
+p_1 <- p*(1+r_E)-div
+p_1 <- format(round(p_1, 2), nsmall = 2)
 ```
 
-9-2. Anle Corporation has a current price of 20, is expected to pay a dividend of 1 dollar in one year, and its expected price right after paying that dividend is 22.
+```{r, echo = FALSE}
+cat("I would expect the security to sell for at least $", p_1, "in one year")
+```
+
+### 9-2. 
+Anle Corporation has a current price of 20, is expected to pay a dividend of 1 dollar in one year, and its expected price right after paying that dividend is 22.
 ```{r}
 p_0 <- 20
 p_1 <- 22
@@ -85,7 +128,7 @@ $$
 \text{Dividend Yield } = \frac{Div}{P_0}
 $$
 
-```{r}
+```{r, echo = FALSE}
 cat("div_yield :", div_1/p_0)
 ```
 
@@ -96,7 +139,8 @@ $$
 $$
 \text{Capital Gains Rate} = \frac{P_1-P_0}{P_0}
 $$
-```{r}
+
+```{r, echo = FALSE}
 cat("capital gains rate :", (p_1-p_0)/p_0)
 ```
 
@@ -104,25 +148,42 @@ c. What is Anle’s equity cost of capital?
 $$
 \text{Equity of Capital = Dividend Yield + Capital Gains Rate}
 $$
-```{r}
+
+```{r, echo = FALSE}
 cat("equity of capital :", (p_1-p_0)/p_0 + div_1/p_0)
 ```
 
 
-9-3. Suppose Acap Corporation will pay a dividend of 2.80 per share at the end of this year and 3 per share next year. You expect Acap’s stock price to be 52 in two years. If Acap’s equity cost of capital is 10%:
-```{r}
+### 9-3. 
+Suppose Acap Corporation will pay a dividend of 2.80 per share at the end of this year and 3 per share next year. You expect Acap’s stock price to be 52 in two years. If Acap’s equity cost of capital is 10%:
+```{r declare vars}
 div_1 <- 2.8
 div_2 <- 3
 p_2 <- 52
 r_E <- 0.10
 ```
+
+We can use the dividend discount model to find the current price
+
 a. What price would you be willing to pay for a share of Acap stock today, if you planned to hold the stock for two years?
-```{r}
+$$
+P_0 = \frac{div_1}{(1+r_E)} + \frac{div_2}{(1+r_E)^2} + \frac{p_2}{(1+r_E)^2}
+$$
+
+```{r, echo = FALSE}
 p_0 <- div_1/(1+r_E) + div_2/(1+r_E)^2 + p_2/(1+r_E)^2
 p_0
 ```
 
 b. Suppose instead you plan to hold the stock for one year. What price would you expect to be able to sell a share of Acap stock for in one year?
+
+$$
+eq.9.1
+$$
+$$
+P_0 = (Div_1 + P_1)/(1+r_E)
+$$
+
 ```{r}
 p_1 <- p_0*(1+r_E)-div_1
 p_1
@@ -135,7 +196,8 @@ p_0
 ```
 it does not change the price form part a
 
-9-4. Krell Industries has a share price of 22 today. If Krell is expected to pay a dividend of 0.88 this year, and its stock price is expected to grow to 23.54 at the end of the year, what is Krell’s dividend yield and equity cost of capital?
+### 9-4. 
+Krell Industries has a share price of 22 today. If Krell is expected to pay a dividend of 0.88 this year, and its stock price is expected to grow to 23.54 at the end of the year, what is Krell’s dividend yield and equity cost of capital?
 ```{r}
 p_0 <- 22
 div_1 <- 0.88
@@ -155,13 +217,14 @@ $$
 \text{Equity of Capital = Dividend Yield + Capital Gains Rate}
 $$
 
-```{r}
+```{r, , echo = FALSE}
 cat("dividend yield :", div_1/p_0, 
     "\nequity of capital", div_1/p_0 + (p_1 - p_0)/p_0)
 
 ```
 
-9-6. Summit Systems will pay a dividend of 1.50 this year. If you expect Summit’s dividend to grow by 6% per year, what is its price per share if its equity cost of capital is 11%?
+### 9-6. 
+Summit Systems will pay a dividend of 1.50 this year. If you expect Summit’s dividend to grow by 6% per year, what is its price per share if its equity cost of capital is 11%?
 ```{r}
 div_1 <- 1.50
 g <- 0.06
@@ -173,11 +236,13 @@ $$
 $$
 P_0 = \frac{Div_1}{r_E-g}
 $$
-```{r}
+
+```{r, , echo = FALSE}
 cat("price per share at period 0 is: $", div_1/(r_E-g), sep = "")
 ```
 
-9-8. Kenneth Cole Productions (KCP), suspended its dividend at the start of 2009. Suppose you do not expect KCP to resume paying dividends until 2011.You expect KCP’s dividend in 2011 to be 0.40 per year (paid at the end of the year), and you expect it to grow by 5% per year thereafter. If KCP’s equity cost of capital is 11%,
+### 9-8. 
+Kenneth Cole Productions (KCP), suspended its dividend at the start of 2009. Suppose you do not expect KCP to resume paying dividends until 2011.You expect KCP’s dividend in 2011 to be 0.40 per year (paid at the end of the year), and you expect it to grow by 5% per year thereafter. If KCP’s equity cost of capital is 11%,
 what is the value of a share of KCP at the start of 2009?
 
 ```{r}
@@ -194,12 +259,12 @@ $$
 P_N = \frac{Div_{n+1}}{r_E-g}
 $$
 
-```{r}
+```{r, , echo = FALSE}
 cat("the price of a KCP stock in 2011 is: $", 
     round(div_1 / (r_E-g), digits = 2))
 ```
-because there are no dividends paid out between 2011 and 2009, the price of the stock in 2009 would just be the 2009 value of the 2011 stock. 
-```{r}
+because there are no dividends paid out between 2011 and 2009, the price of the stock in 2009 would just be the value of the 2011 stock in 2009 dollars. 
+```{r, , echo = FALSE}
 cat("the price of a KCP stock in 2009 is: $", 
     round(div_1 / (r_E-g) / (1+r_E)^2, digits = 2))
 ```
