@@ -1,0 +1,159 @@
+---
+title: "tester"
+author: "Colby S."
+date: "6/7/2022"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+```{r perpetuity trouble}
+c <- 10
+r <- 0.04
+```
+
+present value of perpetuity at period 0
+```{r}
+p <- c/r
+p
+```
+
+perpetuity at period 1
+```{r}
+c/r / (1+r) - c
+```
+perpetuity at period 2
+```{r}
+c/r / (1+r)^2 - c - c/(1+r)
+```
+
+
+perpetuity at period 3
+```{r}
+# c/r / (1+r)^n - sum(discounted_dividends)
+```
+
+$$
+\text{the present value of a perpetuity bought n periods in the future}
+$$
+$$
+PV = \frac{\frac{c}{r}}{(1+r)^n} - \sum_{n = 1}^{\inf}\frac{c}{(1+r)^n}
+$$
+
+```{r}
+c <- 100
+r <- 0.04
+# discounted value of the perpetuity in period n,
+# discounted value of the most recently missed dividend
+# discounted value of all the dividends lost at period n
+n <- 0:999
+div_ <- c / (1+r)^(n)
+
+n <- 0:1000
+pv<- c/r / (1+r)^n
+
+data.frame(n,
+           pv,
+           div = c(0, div_)) |> 
+  mutate(div_lost = cumsum(div),
+         present_value = pv - div_lost) |>
+  # mutate(n, present_value = pv - div_lost) |>
+  # view()
+  ggplot(aes(x = n, y = present_value)) +
+  geom_point()
+```
+
+```{r}
+c <- 100
+r <- 0.04
+
+data.frame(
+  n = 0:999
+) |>
+  mutate(  pv = round(c/r / (1+r)^n, digits = 2)) |>
+    # head()
+
+  ggplot(aes(x = n, y = pv)) +
+  geom_point()
+  # geom_smooth() #why does this graph go negative without any negative values?
+```
+
+```{r will dididends received exceed the price of a perpetuity}
+c <- 100
+r <- 0.04
+n <- 1:1000
+
+# if i buy the perpetuity and dont receive the dividends for the year it was purchased
+data.frame(n,
+           div_pv  = c/(1+r)^n)|>
+  mutate(pv = c/r - cumsum(div_pv)) |>
+  # tail()
+  ggplot(aes(x = n, y = pv))+
+  geom_point()
+
+
+
+# perpetuity bought before it pays out that year
+n <- 0:999
+data.frame(n,
+           div_pv  = round(c/(1+r)^n, digits = 5))|>
+  # view()
+  summarise(sum(div_pv))
+```
+## Example 5.2
+```{r}
+yrs <- 4
+cost <- 150000
+c <- 4000 #monthly
+APR <- 0.05 #compounded semiannualy
+k <- 2 #number of compounding periods the APR has in a year
+
+# convert r_APR to r_monthly
+```
+$$eq. 5.2$$
+$$\text{interest rate per compounding period} = \frac{APR}{\text{k periods / year}}$$
+$$EAR = (1+\frac{r_\text{APR}}{\text{ k componding periods per year}})^k-1$$
+
+```{r example 5.2}
+r_monthly <- (1+APR/2)^(1/6)-1
+
+```
+
+annuities with different r values
+```{r}
+set.seed(100)
+
+c <- 1000
+r <- runif(20, min = 0, max = 0.1)
+
+data.frame(
+  r,
+  n = 1:length(r)
+) |>
+
+summarise(print(c / (1+r)^n))
+```
+
+
+```{r}
+r <- c(0.027, 0.073)
+(1000/(1+r)^5)[2]
+```
+
+testing the value of bond at differnt times. example 6.6
+why is the value of a younger bond more when the discounting is less
+```{r}
+n <- 29:30
+10/0.05*(1-1/(1+0.05)^n) + 100/(1.05)^n #value of a 100 dollar bond w YTM = 5% and 10% annual coupon rate
+
+10/0.05*(1-1/(1+0.05)^n)
+(1-1/(1+0.05)^n) #this term makes the difference because 
+100/(1.05)^n
+```
+

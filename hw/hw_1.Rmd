@@ -1,0 +1,124 @@
+---
+title: "hw_1"
+author: "Colby S."
+date: '2022-06-18'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+ECP 3004
+HW 1
+Due Thursday 05/26/22
+
+### 1. 
+Casper Milktoast has $200,000 available to support consumption in periods 0 (now)
+and 1 (next year). He wants to consume exactly the same amount in each period. The
+interest rate is 8 percent. There is no risk. How much should he invest, and how much can
+he consume in each period?
+
+$$y = C_1 + \frac{c_2}{1+r}$$
+$$C_1 = C_2$$
+$$y = C_1 + \frac{c_1}{1+r}$$
+$$y = C_1(1+1/(1+r))$$
+$$C_1 = \frac{y}{(1+1/(1+r))}$$
+```{r}
+y <- 200000 #wealth
+r <- 0.08 #interest rate
+
+c_1 <- y / (1+1/(1+r))
+c_1
+c_2 <- c_1/(1+r)
+c_2
+```
+
+### 2. 
+An isolated society contains two groups of consumers (the same number of each kind).
+The consumers all have identical preferences with respect to present and future
+consumption, but they have different endowments. Group A has an endowment of (240,
+160) for present and future. Group B has and endowment of (320, 440).
+
+Their preferences can be represented by the utility function
+
+$$U(C_0,C_1)=(C_0*C_1)^{0.5}$$
+
+These preferences have a marginal rate of substitution equal to
+
+$$MRS=-\frac{C_1}{C_0}$$
+
+a. 
+
+What is the budget constraint for members of the A group if the interest rate at which
+they can borrow or lend is r?
+
+$$ C_0+\frac{C_1}{1+r} = Y_0+\frac{Y_1}{1+r} = W$$
+
+b. 
+
+At an interest rate of r what is the value of a member of group A's wealth?
+
+$$wealth_A = 240 + 160/(1+r)$$
+
+c. 
+
+What conditions characterize the optimal consumption point for the consumers if there
+are exchange opportunities between the present and future at a real rate of interest r?
+
+* The optimal consumption point will lie on the budget constraint
+
+|           justification: outside the budget constraint is unaffordable and inside the budget constraint violates the more is better property
+
+$$\text{The Budget Constraint}$$
+$$ C_0+\frac{C_1}{1+r} = Y_0+\frac{Y_1}{1+r} = W$$
+
+|           We must recognize that the budget constraint is a function with x axis $C_0$ and y axis $C_1$. 
+
+|           We can solve for the slope of the budget constraint by putting the budget constraint in point-slope form.
+
+$$W =  C_0+\frac{C_1}{1+r}$$
+$$C_1 = -(1+r)C_0 + (1+r)W$$
+
+
+* The optimal consumption point will have a slope equal to the marginal rate of substitution
+
+|         justification: The marginal rate of substitution is the slope of the budget constraint. If the optimal consumption point lies on the budget constraint, it will inherit its slope.
+
+
+d. 
+
+Show that the consumption function for present period for members of both groups is $C_0=0.5W$ where W is the consumer's wealth. Write an expression for the saving function for each group in a form that shows its dependence on the rate of interest.
+
+$$\text{show that C_0=0.5W}$$
+$$W = C_0+\frac{C_1}{1+r}$$
+from the earlier problem we know,
+$$MRS = -\frac{C_1}{C_0} = -(1+r)$$
+$$C1 = C_0*(1+r)$$
+substituting into the first equation we get
+$$W = C_0+\frac{C_0*(1+r)}{1+r}$$
+$$W = 2C_0$$
+$$C_0 = 0.5W$$
+
+$$\text{Savings Function}$$
+$$Savings = (Y_0-C_0) + \frac{(Y_1-C_1)}{1+r}$$
+$$Savings = Y_0-C_0+\frac{Y_1}{1+r}-C_0$$
+$$Savings = Y_0-2C_0+\frac{Y_1}{1+r}$$
+
+e. What condition must hold if r is to be an equilibrium interest rate for this society,
+assuming that they can exchange only among themselves. What is the equilibrium real
+interest rate?
+
+
+### 3. 
+Suppose an individual has the following utility function
+
+$$U(C_0,C_1) = C_0^\alpha C_1^{1-\alpha}$$
+$$0<\alpha<1$$
+Let the endowments be Y0 and Y1 and let r denote the interest rate.
+a. Use calculus to show that
+
+$$MRS = -\frac{U_0}{U_1} = -\frac{\alpha}{1-\alpha}\frac{C_1}{C_0}$$
+$$C_0^* = \alpha W_0$$
+$$C_1^* = (1-\alpha)(1+r)W_0$$

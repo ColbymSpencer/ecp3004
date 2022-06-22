@@ -1,0 +1,21 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r}
+library(tidyverse)
+```
+
+$$\text{Value of a Perpetuity}$$
+```{r}
+price <- 1000
+rate <- 4*0.01
+c <- price*rate
+n <- 1:1000
+
+data.frame(n, price, rate, c) |>
+  mutate(c_pv = round(c/(1+rate)^n, digits = 2)) |>
+  view()
+```
+

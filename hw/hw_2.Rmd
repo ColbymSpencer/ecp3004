@@ -11,16 +11,18 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
-1. You have just taken out a five-year loan from a bank to buy an engagement ring. The ring costs 7000. You plan to put down 1000 and borrow 6000. You will need to make annual payments of 1250 at the end of each year. Show the timeline of the loan from your perspective. How
-would the timeline differ if you created it from the bank’s perspective?
+
+
+1. You have just taken out a five-year loan from a bank to buy an engagement ring. The ring costs 7000. You plan to put down 1000 and borrow 6000. You will need to make annual payments of 1250 at the end of each year. Show the timeline of the loan from your perspective. How would the timeline differ if you created it from the bank’s perspective?
 ```{r}
-money_labs <- c(6000, rep(-1250, 5))
+c(6000, rep(-1250, 5))
 ```
 
 2.You currently have a four-year-old mortgage outstanding on your house. You make monthly payments of 1600. You have just made a payment. The mortgage has 26 years to go (i.e., it had an original term of 30 years). Show the timeline from your perspective. How would the timeline
 differ if you created it from the bank’s perspective?
 ```{r}
-
+payment <- 1600 #monthly
+term <- 26 #years
 ```
 
 
@@ -28,23 +30,44 @@ differ if you created it from the bank’s perspective?
 a. Four years at an interest rate of 8% per year. 
 b. Eight years at an interest rate of 8% per year. 
 c. Four years at an interest rate of 16% per year. 
+```{r}
+pv <- 7000
+n <- c(4, 8, 4)
+r <- c(8, 8, 16)*0.01
+
+data.frame(pv, n, r) |>
+  mutate(fv = pv*(1+r)^n)
+```
+
 d. Why is the amount of interest earned in part (a) less than half the amount of interest earned
 in part (b)?
-```{r}
 
-```
+>compound interest
 
 4. What is the present value of $13,000 received 
 a. Fourteen years from today when the interest rate is 10% per year? 
 b. Twenty-eight years from today when the interest rate is 20% per year?
 c. Seven years from today when the interest rate is 5% per year?
 ```{r}
+fv <- 13000
+r <- c(10, 20, 5)*0.01
+n <- c(14, 28, 7)
 
+pv <- round(fv/(1+r)^n, 2)
+names(pv) <- c("a", "b", "c")
+pv
 ```
 
 5. Your brother has offered to give you either $75,000 today or 150,000 in 9 years. If the interest rate is 8% per year, which option is preferable?
 ```{r}
+r <- 8*0.01
+fv <- 150000
+n <- 9
 
+NPV_A <- 75000
+NPV_B <- fv/(1+r)^n
+
+NPV_A>=NPV_B
 ```
 
 6. Consider the following alternatives: 
